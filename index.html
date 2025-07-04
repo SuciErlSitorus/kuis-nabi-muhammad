@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kuis Nabi Muhammad ﷺ</title>
+  <style>
+    :root {
+      --sage: #a8c3a5;
+      --sage-dark: #8fa98b;
+      --white: #ffffff;
+      --gray: #f5f5f5;
+      --green: #4caf50;
+      --red: #e74c3c;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--sage);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .quiz-container {
+      background-color: var(--white);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      width: 90%;
+      max-width: 550px;
+      text-align: center;
+      animation: fadeIn 0.6s ease;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: scale(0.9);}
+      to {opacity: 1; transform: scale(1);}
+    }
+
+    h2 {
+      color: var(--sage-dark);
+      margin-bottom: 25px;
+    }
+
+    .question {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .option {
+      background-color: var(--gray);
+      border: none;
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin: 8px 0;
+      cursor: pointer;
+      font-size: 16px;
+      width: 100%;
+      text-align: left;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    .option:hover {
+      background-color: var(--sage);
+      transform: translateX(5px);
+    }
+
+    .result {
+      margin-top: 15px;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .correct {
+      background-color: var(--green) !important;
+      color: white;
+    }
+
+    .wrong {
+      background-color: var(--red) !important;
+      color: white;
+    }
+
+    button#nextButton {
+      margin-top: 25px;
+      padding: 12px 24px;
+      background-color: var(--sage-dark);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      display: none;
+      transition: background 0.3s;
+    }
+
+    button#nextButton:hover {
+      background-color: #7e987b;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-container">
+    <h2>Kuis Tentang Nabi Muhammad ﷺ</h2>
+    <div class="question" id="questionText"></div>
+    <div id="optionsContainer"></div>
+    <div class="result" id="resultText"></div>
+    <button id="nextButton" onclick="nextQuestion()">Soal Berikutnya</button>
+  </div>
+
+  <script>
+    const quizData = [
+      {
+        question: "Siapa nama ayah Nabi Muhammad ﷺ?",
+        options: ["Abu Thalib", "Abdullah", "Abu Bakar", "Utsman"],
+        correct: "Abdullah"
+      },
+      {
+        question: "Nabi Muhammad ﷺ lahir di kota?",
+        options: ["Madinah", "Yerusalem", "Mekah", "Taif"],
+        correct: "Mekah"
+      },
+      {
+        question: "Istri pertama Nabi Muhammad ﷺ adalah?",
+        options: ["Khadijah", "Aisyah", "Hafsah", "Zainab"],
+        correct: "Khadijah"
+      },
+      {
+        question: "Surat apa yang pertama kali turun kepada Nabi Muhammad ﷺ?",
+        options: ["Al-Fatihah", "Al-Baqarah", "Al-Alaq", "An-Nas"],
+        correct: "Al-Alaq"
+      },
+      {
+        question: "Sahabat yang menemani hijrah ke Madinah adalah?",
+        options: ["Ali bin Abi Thalib", "Umar bin Khattab", "Abu Bakar", "Bilal bin Rabah"],
+        correct: "Abu Bakar"
+      }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    const questionText = document.getElementById("questionText");
+    const optionsContainer = document.getElementById("optionsContainer");
+    const resultText = document.getElementById("resultText");
+    const nextButton = document.getElementById("nextButton");
+
+    function showQuestion() {
+      const q = quizData[currentQuestion];
+      questionText.textContent = q.question;
+      optionsContainer.innerHTML = "";
+      resultText.textContent = "";
+      nextButton.style.display = "none";
+
+      q.options.forEach(option => {
+        const btn = document.createElement("button");
+        btn.textContent = option;
+        btn.className = "option";
+        btn.onclick = () => checkAnswer(option, btn);
+        optionsContainer.appendChild(btn);
+      });
+    }
+
+    function checkAnswer(selected, btnClicked) {
+      const correct = quizData[currentQuestion].correct;
+      const buttons = document.querySelectorAll(".option");
+
+      buttons.forEach(btn => {
+        btn.disabled = true;
+        if (btn.textContent === correct) {
+          btn.classList.add("correct");
+        }
+        if (btn === btnClicked && btn.textContent !== correct) {
+          btn.classList.add("wrong");
+        }
+      });
+
+      if (selected === correct) {
+        resultText.textContent = "Jawaban benar! 🎉";
+        score++;
+      } else {
+        resultText.textContent = `Salah. Jawaban yang benar: ${correct}`;
+      }
+
+      nextButton.style.display = "inline-block";
+    }
+
+    function nextQuestion() {
+      currentQuestion++;
+      if (currentQuestion < quizData.length) {
+        showQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+    function showResult() {
+      questionText.textContent = "Kuis Selesai!";
+      optionsContainer.innerHTML = "";
+      resultText.innerHTML = `Skor akhir kamu: <strong>${score} dari ${quizData.length}</strong>`;
+      nextButton.style.display = "none";
+    }
+
+    showQuestion();
+  </script>
+
+</body>
+</html>
